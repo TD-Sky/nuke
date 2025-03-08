@@ -1,0 +1,25 @@
+[workspace]
+resolver = "3"
+members = [".", "nu_plugin_nuke"]
+
+[workspace.dependencies]
+ahash = "0.8"
+boxcar = "0.2"
+clap = "4.5"
+easy-ext = "1.0"
+glob = "0.3"
+indoc = "2.0"
+nu-plugin = "0.102.0"
+nu-protocol = "0.102.0"
+num_cpus = "1.16"
+which = "7.0"
+
+[package]
+name = "nuke"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+indoc = { workspace = true }
+which = { workspace = true }
+clap = { workspace = true, features = ["derive"] }

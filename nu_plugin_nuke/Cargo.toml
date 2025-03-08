@@ -1,0 +1,13 @@
+[package]
+name = "nu_plugin_nuke"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nu-plugin = { workspace = true }
+nu-protocol = { workspace = true }
+boxcar = { workspace = true }
+glob = { workspace = true }
+easy-ext = { workspace = true }
+num_cpus = { workspace = true }
+ahash = { workspace = true }
