@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use glob::glob;
 use nu_plugin::{EngineInterface, EvaluatedCall, Plugin, PluginCommand, SimplePluginCommand};
+use nu_protocol::engine::Closure;
 use nu_protocol::{
     FromValue, LabeledError, ShellError, Signature, Spanned, SyntaxShape, Type, Value,
 };
@@ -48,13 +49,13 @@ impl SimplePluginCommand for NukeTask {
         Signature::build(PluginCommand::name(self))
             .input_output_type(Type::Nothing, Type::record())
             .required("name", SyntaxShape::String, "task name")
+            .optional("run", SyntaxShape::Closure(None), "task body")
             .named(
                 "deps",
                 SyntaxShape::List(Box::new(SyntaxShape::String)),
                 "the needed tasks to run first",
                 None,
             )
-            .named("run", SyntaxShape::Closure(None), "task body", None)
             .named("target", SyntaxShape::Filepath, "the built file", None)
             .named(
                 "files",
@@ -78,6 +79,12 @@ impl SimplePluginCommand for NukeTask {
         let workdir = Path::new(&workdir);
 
         let name = Spanned::<String>::from_value(call.positional[0].clone())?;
+        let run = call
+            .positional
+            .get(1)
+            .cloned()
+            .map(Spanned::<Closure>::from_value)
+            .transpose()?;
         let deps = call.get_flag("deps")?.unwrap_or_default();
         let files = call
             .get_flag_value("files")
@@ -110,7 +117,6 @@ impl SimplePluginCommand for NukeTask {
             })
             .transpose()?
             .unwrap_or_default();
-        let run = call.get_flag("run")?;
         let target = call.get_flag("target")?;
 
         plugin.tasks.push(Task {
